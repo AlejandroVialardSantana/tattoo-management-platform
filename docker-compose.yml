@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: tattoo-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: tattoo_admin
+      POSTGRES_PASSWORD: tattoo_secure_password
+      POSTGRES_DB: tattoo_management
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tattoo-network
+
+  backend-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tattoo-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/tattoo_management
+      - SPRING_DATASOURCE_USERNAME=tattoo_admin
+      - SPRING_DATASOURCE_PASSWORD=tattoo_secure_password
+    depends_on:
+      - postgres-db
+    networks:
+      - tattoo-network
+
+  frontend-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tattoo-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-api
+    networks:
+      - tattoo-network
+
+volumes:
+  postgres_data:
+
+networks:
+  tattoo-network:
+    driver: bridge
