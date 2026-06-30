@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -44,7 +45,7 @@ public class GlobalExceptionHandler {
     
     @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiErrorResponse handleNotFoundExceptions(org.springframework.web.servlet.resource.NoResourceFoundException ex) {
+    public ApiErrorResponse handleNotFoundExceptions(NoResourceFoundException ex) {
         return new ApiErrorResponse(
             HttpStatus.NOT_FOUND.value(),
             "La ruta solicitada no existe en la API",
